@@ -1,0 +1,27 @@
+<div class="bookshelf-thumbnail">
+  <h1>[{{bookshelf.id}}] {{bookshelf.title}}</h1>
+
+  <div class="horizontal-book-list-container">
+
+    <div class="horizontal-book-list">
+      <div *ngFor="let volume of bookshelfVolumes">
+        <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
+      </div>
+    </div>
+
+  </div>
+  <!--
+    <div class="glider-contain">
+      <div class="glider">
+        <div *ngFor="let volume of bookshelfVolumes">
+          <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
+        </div>
+      </div>
+
+      <button role="button" aria-label="Previous" class="glider-prev">«</button>
+      <button role="button" aria-label="Next" class="glider-next">»</button>
+      <div role="tablist" class="dots"></div>
+    </div>
+  -->
+
+</div>

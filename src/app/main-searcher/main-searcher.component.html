@@ -1,0 +1,53 @@
+<mdc-top-app-bar>
+  <mdc-top-app-bar-row>
+    <mdc-top-app-bar-section align="left">
+      <img src="https://img.icons8.com/clouds/60/000000/books.png">
+<!--      <mdc-top-app-bar-title>-->
+<!--        <h1 mdcHeadline3>LIVRES</h1>-->
+<!--      </mdc-top-app-bar-title>-->
+    </mdc-top-app-bar-section>
+    <mdc-top-app-bar-section align="end">
+      <app-sign-in></app-sign-in>
+<!--      <button mdc-button outlined raised secondary routerLink="/library">MY LIBRARY</button>-->
+    </mdc-top-app-bar-section>
+  </mdc-top-app-bar-row>
+</mdc-top-app-bar>
+
+<div class="scrollable-y">
+
+  <div class="search-box">
+    <h1>LIVRES</h1>
+    <form class="search-input" [formGroup]="searchForm">
+      <mdc-form-field fluid>
+        <mdc-text-field outlined placeholder="Search books" formControlName="searchQuery" useNativeValidation="false"
+                        (focusin)="searchForm.markAsTouched()" (focusout)="searchForm.markAsUntouched()">
+          <mdc-icon mdcTextFieldIcon leading clickable type="submit"
+                    (click)="searchBooks(searchForm.value.searchQuery)">search
+          </mdc-icon>
+          <mdc-icon mdcTextFieldIcon trailing clickable (click)="searchForm.reset()"
+                    *ngIf="searchForm.dirty && searchForm.value.searchQuery!==''">close
+          </mdc-icon>
+        </mdc-text-field>
+      </mdc-form-field>
+    </form>
+  </div>
+
+<!--  <div class="horizontal-book-list">
+
+    <div *ngFor="let volume of searchResults">
+      <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
+    </div>
+
+  </div>-->
+
+  <div *ngIf="searchResults" class="book-list-container">
+    <div class="book-list">
+
+      <div *ngFor="let volume of searchResults">
+        <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
+      </div>
+
+    </div>
+  </div>
+
+</div>

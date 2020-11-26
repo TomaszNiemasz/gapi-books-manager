@@ -1,0 +1,28 @@
+<mdc-card class="book-thumbnail">
+  <mdc-card-primary-action (click)="viewVolume(volume.id)" class="book-thumbnail__media">
+    <img *ngIf="volume.volumeInfo.imageLinks" src="{{volume.volumeInfo.imageLinks.thumbnail?
+          volume.volumeInfo.imageLinks.thumbnail:
+          volume.volumeInfo.imageLinks.smallThumbnail}}">
+    <mdc-card-media-content class="book-thumbnail__media-content--with-title">
+      <div class="book-thumbnail__media-info">
+        <div class="book-thumbnail__media-title" mdcSubtitle1>
+          {{volume.volumeInfo.title}}
+        </div>
+        <div class="book-thumbnail__media-author" mdcSubtitle2>
+          {{volume.volumeInfo.authors}}
+        </div>
+      </div>
+    </mdc-card-media-content>
+  </mdc-card-primary-action>
+  <!--        <mat-card-actions>
+            <button mdcIconButton mdcCardAction="icon">
+              <mdc-icon mdcIconOn>favorite</mdc-icon>
+              <mdc-icon>favorite_border</mdc-icon>
+            </button>
+            <button mdcIconButton mdcCardAction="icon">
+              <mdc-icon mdcIconOn>bookmark</mdc-icon>
+              <mdc-icon>bookmark_border</mdc-icon>
+            </button>
+            <button mdcIconButton mdcCardAction="icon" icon="share"></button>
+          </mat-card-actions>-->
+</mdc-card>

@@ -44,3 +44,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+/src/app/api_key.ts
+/src/app/oauth2_key.ts

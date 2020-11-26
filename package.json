@@ -1,5 +1,5 @@
 {
-  "name": "google-books-manager",
+  "name": "GAPI Books Manager",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -11,14 +11,24 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-mdc/web": "^3.2.1",
     "@angular/animations": "~8.2.14",
+    "@angular/cdk": "~8.2.3",
     "@angular/common": "~8.2.14",
     "@angular/compiler": "~8.2.14",
     "@angular/core": "~8.2.14",
     "@angular/forms": "~8.2.14",
+    "@angular/material": "^8.2.3",
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
+    "@material/image-list": "^4.0.0",
+    "@types/gapi": "0.0.39",
+    "@types/gapi.auth2": "0.0.51",
+    "glider-js": "^1.7.1",
+    "hammerjs": "^2.0.8",
+    "lodash": "^4.17.15",
+    "ng-gapi": "0.0.73",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

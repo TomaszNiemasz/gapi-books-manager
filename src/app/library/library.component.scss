@@ -1,0 +1,19 @@
+/*.mdc-drawer {
+  background-color: transparentize(#fff, 0.1);
+}*/
+/*
+
+.mdc-drawer-scrim, .mdc-drawer--modal {
+    position: absolute;
+  }*/
+
+.bookshelf-list {
+  background-color: #ceaa94;
+  max-width: 80%;
+  width: auto;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  //justify-content: flex-start;
+  //align-items: center;
+}

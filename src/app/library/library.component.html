@@ -1,0 +1,75 @@
+<mdc-top-app-bar #appbar>
+  <mdc-top-app-bar-row>
+    <mdc-top-app-bar-section align="start">
+      <button mdc-icon-button>
+        <mdc-icon (click)="sidenav.open=true">menu</mdc-icon>
+      </button>
+      <!--      <mdc-icon mdcTopAppBarNavigationIcon (click)="sidenav.open=true">menu</mdc-icon>-->
+      <img src="https://img.icons8.com/clouds/60/000000/books.png">
+<!--      <mdc-top-app-bar-title>
+        &lt;!&ndash;        <img src="https://img.icons8.com/plasticine/64/000000/google-logo.png">&ndash;&gt;
+        <h1 mdcHeadline3>LIVRES</h1>
+      </mdc-top-app-bar-title>-->
+    </mdc-top-app-bar-section>
+    <mdc-top-app-bar-section align="end">
+      <button mdc-fab mini routerLink="/main">
+        <mdc-icon>search</mdc-icon>
+      </button>
+      <button mdc-button raised secondary *ngIf="authService.getSessionToken()"
+              (click)="authService.signOut()">SIGN OUT
+      </button>
+    </mdc-top-app-bar-section>
+  </mdc-top-app-bar-row>
+</mdc-top-app-bar>
+
+<mdc-drawer drawer="modal" #sidenav>
+  <mdc-drawer-header title="My Library"></mdc-drawer-header>
+  <mdc-drawer-content>
+    <mdc-list class="sidenav-list">
+      <a mdc-list-item *ngFor="let item of destinations" [activated]="item.activated">
+        <mdc-icon mdcListItemGraphic *ngIf="item.icon">{{item.icon}}</mdc-icon>
+        {{item.label}}
+      </a>
+      <mdc-list-divider></mdc-list-divider>
+      <h6 mdcListGroupSubheader>Bookshelves</h6>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>bookmark</mdc-icon>
+        One
+      </a>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>bookmark</mdc-icon>
+        Two
+      </a>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>bookmark</mdc-icon>
+        Three
+      </a>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>bookmark</mdc-icon>
+        Four
+      </a>
+      <mdc-list-divider></mdc-list-divider>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>settings</mdc-icon>
+        Settings
+      </a>
+      <a mdc-list-item>
+        <mdc-icon mdcListItemGraphic>announcement</mdc-icon>
+        Help & feedback
+      </a>
+    </mdc-list>
+  </mdc-drawer-content>
+</mdc-drawer>
+
+<div class="scrollable-y">
+  <button mdc-fab position="bottomRight" icon="add"></button>
+
+  <div class="bookshelf-list">
+
+    <div style="background-color: #ff9100" *ngFor="let bookshelf of bookshelves">
+      <app-bookshelf-thumbnail [bookshelf]="bookshelf"></app-bookshelf-thumbnail>
+    </div>
+
+  </div>
+
+</div>
