@@ -26,8 +26,6 @@ import { BookViewerComponent } from './book-viewer/book-viewer.component';
 import { BookThumbnailComponent } from './book-thumbnail/book-thumbnail.component';
 import { BookshelfComponent } from './bookshelf/bookshelf.component';
 import { BookshelfThumbnailComponent } from './bookshelf-thumbnail/bookshelf-thumbnail.component';
-import {GoogleApiService, GoogleAuthService} from 'ng-gapi';
-
 
 @NgModule({
   declarations: [
@@ -65,10 +63,7 @@ import {GoogleApiService, GoogleAuthService} from 'ng-gapi';
     MdcFabModule,
     MdcRippleModule
   ],
-  providers: [
-    { provide: GoogleAuthService },
-    { provide: GoogleApiService }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
