@@ -1,110 +1,103 @@
 import {Injectable, NgZone} from '@angular/core';
-import {GoogleAuthService} from 'ng-gapi/lib';
+import {oAuthCredentials} from './oauth2_key';
 import {Router} from '@angular/router';
-import GoogleUser = gapi.auth2.GoogleUser;
-import GoogleAuth = gapi.auth2.GoogleAuth;
+
+// Mówimy TypeScriptowi: "obiekt google istnieje, dołącza go skrypt z index.html".
+// Bez tej linijki kompilator zgłosiłby błąd "Cannot find name 'google'".
+declare const google: any;
+
+// Zakres uprawnień = o co prosimy użytkownika (tu: dostęp do jego półek w Google Books).
+const BOOKS_SCOPE = 'https://www.googleapis.com/auth/books';
+
+// Nazwy "szuflad" w pamięci przeglądarki, w których trzymamy token i czas jego wygaśnięcia.
+const TOKEN_KEY = 'accessToken';
+const EXPIRES_AT_KEY = 'accessTokenExpiresAt';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  public static readonly SESSION_STORAGE_KEY: string = 'accessToken';
+  // Obiekt od Google, który umie poprosić użytkownika o zgodę.
+  private tokenClient: any;
 
-  user: GoogleUser;
-  userName: string;
-  googleAuth: GoogleAuth;
+  // NgZone = narzędzie Angulara, wyjaśnione niżej.
+constructor(private ngZone: NgZone, private router: Router) { }
 
-  constructor(
-    private googleAuthService: GoogleAuthService,
-    private router: Router,
-    private ngZone: NgZone
-  ) { }
+  // Wywoływane po kliknięciu "Sign in".
+  // onSuccess: co zrobić, gdy się uda. onError: co zrobić, gdy coś pójdzie nie tak.
+  public signIn(onSuccess: () => void, onError: (message: string) => void): void {
 
-  public setUser(user: GoogleUser) {
-    this.user = user;
-  }
-
-  public getUser(): GoogleUser {
-    return this.user;
-  }
-
-  public setUserName(userName: string) {
-    this.userName = userName;
-  }
-
-  public getUserName(): string {
-    return this.userName;
-  }
-
-  public signIn() {
-    this.googleAuthService.getAuth().subscribe((googleAuth) => {
-      googleAuth.signIn().then(
-        res => this.handleSignInSuccess(res),
-          err => this.handleSignInError(err));
-    });
-  }
-
-  public signOut() {
-    if (sessionStorage.getItem('accessToken') !== '') {
-      sessionStorage.clear();
-      localStorage.clear();
-      gapi.auth2.getAuthInstance().signOut();
-      this.router.navigate(['/main']);
-/*      this.getSignInStatus();
-      this.getToken();
-      this.getRealToken();*/
+    // Zabezpieczenie: biblioteka Google mogła się nie załadować (brak internetu, adblock).
+    if (typeof google === 'undefined') {
+      onError('Nie udało się załadować logowania Google.');
+      return;
     }
-  }
 
-  public getSessionToken() {
-    // console.log(`SessionToken: ${sessionStorage.getItem('accessToken')}`)
-    return sessionStorage.getItem('accessToken');
-  }
+    // Tworzymy "klienta tokenów" i mówimy mu, kim jesteśmy i o co prosimy.
+    this.tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: oAuthCredentials.client_id,
+      scope: BOOKS_SCOPE,
 
-  public setSessionToken(accessToken) {
-    sessionStorage.setItem('accessToken', accessToken);
-  }
+      // Google wywoła tę funkcję, gdy użytkownik odpowie w okienku (zgoda albo odmowa).
+      callback: (response: any) => {
+        this.ngZone.run(() => {
+          if (response.error) {
+            onError('Logowanie nie powiodło się: ' + response.error);
+            return;
+          }
+          this.saveToken(response.access_token, response.expires_in);
+          onSuccess();
+        });
+      },
 
-  public getToken() {
-    return gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-  }
+      // Wywoływane, gdy okienko się nie otworzy lub użytkownik je zamknie.
+            error_callback: (error: any) => {
+        // Zapisujemy pełny błąd w konsoli, żeby można go było przeczytać przy diagnozie.
+        console.warn('Błąd okna logowania Google:', error);
 
-  public getRealToken() {
-
-  }
-
-  public getSignInStatus() {
-    return gapi.auth2.getAuthInstance().isSignedIn.get();
-  }
-
-  public listenSignInStatus() {
-    gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn => {
-      console.log('SignInStatus CHANGED')
-      console.log(`SignInStatus: ${signedIn}`);
-      console.log(`HasBooksScope: ${gapi.auth2.getAuthInstance().currentUser.get().hasGrantedScopes('https://www.googleapis.com/auth/books')}`);
-      console.log(`AccessToken: ${gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token}`);
-      if (signedIn) {
-        this.setSessionToken(this.getToken());
-        console.log('SessionTokenUpdated');
-      } else {
-        sessionStorage.clear();
-        localStorage.clear();
-        console.log('SessionTokenCleared');
+        this.ngZone.run(() => {
+          if (error.type === 'popup_failed_to_open') {
+            onError('Przeglądarka zablokowała okno logowania. Zezwól tej stronie na wyskakujące okienka.');
+          } else if (error.type === 'popup_closed') {
+            onError('Okno logowania zostało zamknięte przed zakończeniem.');
+          } else {
+            onError('Logowanie nie powiodło się z nieznanego powodu.');
+          }
+        });
       }
     });
+
+    // Otwieramy okienko Google z prośbą o zgodę.
+    this.tokenClient.requestAccessToken();
   }
 
-  private handleSignInSuccess(signInResponse: GoogleUser) {
-    this.ngZone.run(() => {
-      this.user = signInResponse;
-      sessionStorage.setItem(
-        AuthService.SESSION_STORAGE_KEY, signInResponse.getAuthResponse().access_token
-      );
-    });
+  // Zapisuje token i godzinę, o której przestanie być ważny.
+  private saveToken(accessToken: string, expiresInSeconds: number): void {
+    // Date.now() = bieżący czas w milisekundach. Dodajemy czas życia tokenu
+    // (sekundy * 1000 = milisekundy) i odejmujemy 60 s zapasu.
+    const expiresAt = Date.now() + (expiresInSeconds - 60) * 1000;
+    sessionStorage.setItem(TOKEN_KEY, accessToken);
+    // sessionStorage trzyma tylko tekst, więc liczbę zamieniamy na napis.
+    sessionStorage.setItem(EXPIRES_AT_KEY, String(expiresAt));
   }
 
-  private handleSignInError(signInError) {
-    console.warn(signInError);
+  // Zwraca ważny token albo null, gdy go nie ma lub wygasł.
+  public getSessionToken(): string | null {
+    const token = sessionStorage.getItem(TOKEN_KEY);
+    const expiresAt = Number(sessionStorage.getItem(EXPIRES_AT_KEY));
+
+    if (!token || Date.now() >= expiresAt) {
+      return null;
+    }
+    return token;
   }
+
+  // Wylogowanie: zapominamy token i wracamy na stronę główną.
+  public signOut(): void {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(EXPIRES_AT_KEY);
+    this.router.navigate(['/main']);
+  }
+
 }

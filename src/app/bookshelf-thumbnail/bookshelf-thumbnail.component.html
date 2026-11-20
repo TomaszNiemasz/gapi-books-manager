@@ -5,8 +5,9 @@
 
     <div class="horizontal-book-list">
       <div *ngFor="let volume of bookshelfVolumes">
-        <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
-      </div>
+        <app-book-thumbnail [volume]="volume" [shelfId]="bookshelf.id"
+            (removed)="onVolumeRemoved($event)"></app-book-thumbnail>     
+    </div>
     </div>
 
   </div>

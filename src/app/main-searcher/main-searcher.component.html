@@ -44,10 +44,9 @@
     <div class="book-list">
 
       <div *ngFor="let volume of searchResults">
-        <app-book-thumbnail [volume]="volume"></app-book-thumbnail>
+                <app-book-thumbnail [volume]="volume"
+                [alreadyOnShelf]="isOnToReadShelf(volume.id)"></app-book-thumbnail>
       </div>
 
     </div>
   </div>
-
-</div>

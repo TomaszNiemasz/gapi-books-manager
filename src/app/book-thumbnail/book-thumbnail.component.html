@@ -14,7 +14,18 @@
       </div>
     </mdc-card-media-content>
   </mdc-card-primary-action>
-  <!--        <mat-card-actions>
+
+  <mdc-card-actions *ngIf="shelfId === undefined && !alreadyOnShelf && !justAdded">
+    <button mdc-button (click)="addToShelf()">Add to "To read"</button>
+  </mdc-card-actions>
+  <p *ngIf="shelfId === undefined && alreadyOnShelf" class="book-thumbnail__status">Na półce "To read"</p>
+  <p *ngIf="statusMessage" class="book-thumbnail__status">{{ statusMessage }}</p>
+
+  <mdc-card-actions *ngIf="canRemove">
+    <button mdc-button (click)="removeFromShelf()">Remove</button>
+  </mdc-card-actions>
+
+         <mat-card-actions>
             <button mdcIconButton mdcCardAction="icon">
               <mdc-icon mdcIconOn>favorite</mdc-icon>
               <mdc-icon>favorite_border</mdc-icon>
@@ -24,5 +35,6 @@
               <mdc-icon>bookmark_border</mdc-icon>
             </button>
             <button mdcIconButton mdcCardAction="icon" icon="share"></button>
-          </mat-card-actions>-->
+          </mat-card-actions>
+
 </mdc-card>
