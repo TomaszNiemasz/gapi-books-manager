@@ -44,8 +44,11 @@ export class BooksService {
   }
 
   public searchVolumes(query: string): Observable<IVolume[]> {
-    return this.httpClient.get<{ items: IVolume[] }>(
-      `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=40`)
+    // encodeURIComponent zamienia znaki specjalne na bezpieczny zapis,
+    // np. spacja na %20, a & na %26.
+    const url = `https://www.googleapis.com/books/v1/volumes`
+      + `?q=${encodeURIComponent(query)}&maxResults=40&key=${apiKey}`;
+    return this.httpClient.get<{ items: IVolume[] }>(url)
       .pipe(map(data => data.items || []));
   }
 
@@ -56,52 +59,35 @@ export class BooksService {
   }
 
   public getVolumeById(volumeId: string): Observable<IVolume> {
-    return this.httpClient.get<IVolume>(
-      `https://www.googleapis.com/books/v1/volumes/${volumeId}`);
+    const url = `https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(volumeId)}`
+      + `?key=${apiKey}`;
+    return this.httpClient.get<IVolume>(url);
   }
 
-  public getUserBookshelves(accessToken: string): Observable<IBookshelf[]> {
-    return this.httpClient.get<{ items: IBookshelf[] }>(
-      `https://www.googleapis.com/books/v1/mylibrary/bookshelves?key=${apiKey}
-      &access_token=${accessToken}`)
+    public getUserBookshelves(accessToken: string): Observable<IBookshelf[]> {
+    // Adres składamy z dwóch kawałków bez przenoszenia tekstu do nowej linii w środku.
+    const url = `https://www.googleapis.com/books/v1/mylibrary/bookshelves`
+      + `?key=${apiKey}&access_token=${accessToken}`;
+    return this.httpClient.get<{ items: IBookshelf[] }>(url)
       .pipe(map(data => data.items || []));
   }
 
   public getUserBookshelfVolumes(bookshelfId: number, accessToken: string): Observable<IVolume[]> {
-    return this.httpClient.get<{ items: IVolume[] }>(
-      `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${+bookshelfId}
-      /volumes?key=${apiKey}
-      &access_token=${accessToken}`)
+    const url = `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${+bookshelfId}/volumes`
+      + `?key=${apiKey}&access_token=${accessToken}`;
+    return this.httpClient.get<{ items: IVolume[] }>(url)
       .pipe(map(data => data.items || []));
   }
 
-  public addVolumeToUserBookshelf(bookshelfId: number, volumeId: string, accessToken: string) {
-    return this.httpClient.post(
-      `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${bookshelfId}
-      /addVolume?volumeId=${volumeId}
-      &key=${apiKey}
-      &access_token=${accessToken}`, {
-        'Content-Type': 'application/json'
-      }).subscribe(
-      () => {
-        console.log('Added to bookshelf!');
-      },
-      () => {
-
-      },
-      () => {
-
-      }
-    );
+  public addVolumeToUserBookshelf(bookshelfId: number, volumeId: string, accessToken: string): Observable<any> {
+    const url = `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${+bookshelfId}/addVolume`
+      + `?volumeId=${encodeURIComponent(volumeId)}&key=${apiKey}&access_token=${accessToken}`;
+    return this.httpClient.post(url, null);
   }
 
-  public deleteVolumeFromUserBookshelf(bookshelfId: number, volumeId: string, accessToken: string) {
-    return this.httpClient.post(
-      `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${bookshelfId}
-      /removeVolume?volumeId=${volumeId}
-      &key=${apiKey}
-      &access_token=${accessToken}`, {
-        'Content-Type': 'application/json'
-      }).toPromise();
+  public deleteVolumeFromUserBookshelf(bookshelfId: number, volumeId: string, accessToken: string): Observable<any> {
+    const url = `https://www.googleapis.com/books/v1/mylibrary/bookshelves/${+bookshelfId}/removeVolume`
+      + `?volumeId=${encodeURIComponent(volumeId)}&key=${apiKey}&access_token=${accessToken}`;
+    return this.httpClient.post(url, null);
   }
 }
