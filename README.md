@@ -1,27 +1,48 @@
-# GoogleBooksApiManager
+# GAPI Books Manager
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.22.
+A single-page web app for browsing Google Books and managing your own
+bookshelves. Built with Angular as a university project (2020).
 
-## Development server
+> **Status:** archived. The project uses Angular 8 and the legacy Google
+> Sign-In library, so it is kept as a portfolio piece and is not maintained.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Features
 
-## Code scaffolding
+- Search Google Books by any query
+- Book details page
+- Sign in with a Google account (OAuth 2.0)
+- Browse your own library and bookshelves
+- Add books to and remove them from your bookshelves
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Tech stack
 
-## Build
+Angular 8 · TypeScript · RxJS · Angular Material · `ng-gapi` · Google Books API ·
+Karma / Jasmine (unit tests) · Protractor (e2e tests)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## Running locally
 
-## Running unit tests
+The repository does not contain Google credentials, so you must create two
+files yourself. Both are listed in `.gitignore`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+1. In the Google Cloud Console, create an **API key** and an **OAuth 2.0 client ID**
+   and enable the Books API.
+2. Create `src/app/api_key.ts`:
+   ```ts
+   export const apiKey = 'YOUR_API_KEY';
+   ```
+3. Create `src/app/oauth2_key.ts` exporting `oAuthCredentials` with your
+   `client_id` (see how it is used in `src/app/sign-in/sign-in.component.ts`).
+4. Install and start (an older Node.js version, such as 12 or 14, may be needed for Angular 8):
+   ```bash
+   nvm use 16
+   npm install
+   npm start
+   ```
+   Open `http://localhost:4200/`.
 
-## Running end-to-end tests
+## Tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```bash
+npm test     # unit tests (Karma + Jasmine)
+npm run e2e  # end-to-end tests (Protractor)
+```
