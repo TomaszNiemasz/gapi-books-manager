@@ -3,8 +3,7 @@
 A single-page web app for browsing Google Books and managing your own
 bookshelves. Built with Angular as a university project (2020).
 
-> **Status:** archived. The project uses Angular 8 and the legacy Google
-> Sign-In library, so it is kept as a portfolio piece and is not maintained.
+> **Status:** archived. The project uses Angular 8, so it is kept as a portfolio piece and is not maintained.
 
 ## Features
 
