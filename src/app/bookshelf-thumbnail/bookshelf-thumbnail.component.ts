@@ -39,4 +39,9 @@ export class BookshelfThumbnailComponent implements OnInit {
         console.log(this.bookshelf.title + ': ' + this.bookshelfVolumes);
       });
   }
+
+  onVolumeRemoved(volumeId: string): void {
+    this.bookshelfVolumes = this.bookshelfVolumes.filter(volume => volume.id !== volumeId);
+  }
+
 }
